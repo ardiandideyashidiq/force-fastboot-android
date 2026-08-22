@@ -18,15 +18,24 @@ android {
 
     signingConfigs {
         create("release") {
-            // Local convenience only: reuse the debug keystore when present so
-            // `assembleRelease` produces an installable APK. Fresh clones without
-            // one get an unsigned APK instead of a failed build.
-            val keystoreFile = file("${System.getProperty("user.home")}/.android/debug.keystore")
-            if (keystoreFile.exists()) {
-                storeFile = keystoreFile
-                storePassword = "android"
-                keyAlias = "androiddebugkey"
-                keyPassword = "android"
+            // CI: use environment variables passed from GitHub Actions secrets
+            val ciKeystorePath = System.getenv("CI_KEYSTORE_FILE")
+            if (ciKeystorePath != null) {
+                storeFile = file(ciKeystorePath)
+                storePassword = System.getenv("CI_KEYSTORE_PASSWORD") ?: error("CI_KEYSTORE_PASSWORD not set")
+                keyAlias = System.getenv("CI_KEY_ALIAS") ?: error("CI_KEY_ALIAS not set")
+                keyPassword = System.getenv("CI_KEY_PASSWORD") ?: error("CI_KEY_PASSWORD not set")
+            } else {
+                // Local convenience only: reuse the debug keystore when present so
+                // `assembleRelease` produces an installable APK. Fresh clones without
+                // one get an unsigned APK instead of a failed build.
+                val keystoreFile = file("${System.getProperty("user.home")}/.android/debug.keystore")
+                if (keystoreFile.exists()) {
+                    storeFile = keystoreFile
+                    storePassword = "android"
+                    keyAlias = "androiddebugkey"
+                    keyPassword = "android"
+                }
             }
         }
     }
