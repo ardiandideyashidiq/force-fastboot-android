@@ -34,19 +34,25 @@ jobs:
           CI_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew assembleRelease
 
-      - name: Get version name
-        id: version
+      - name: Get timestamp
+        id: timestamp
         run: |
-          VERSION=$(grep 'versionName' app/build.gradle.kts | sed 's/.*"\(.*\)".*/\1/')
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          TIMESTAMP=$(date +'%Y-%m-%d-%H%M')
+          echo "timestamp=$TIMESTAMP" >> "$GITHUB_OUTPUT"
+
+      - name: Get commit message
+        id: commit
+        run: |
+          MSG=$(git log -1 --pretty=%B)
+          echo "message=$MSG" >> "$GITHUB_OUTPUT"
 
       - name: Rename APK
-        run: mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/forcefastboot-release.apk
+        run: mv app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/force-fastboot.apk
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.version.outputs.version }}
-          name: Release ${{ steps.version.outputs.version }}
-          files: app/build/outputs/apk/release/forcefastboot-release.apk
-          generate_release_notes: true
+          tag_name: v${{ steps.timestamp.outputs.timestamp }}
+          name: Release ${{ steps.timestamp.outputs.timestamp }}
+          body: ${{ steps.commit.outputs.message }}
+          files: app/build/outputs/apk/release/force-fastboot.apk
