@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- MTK Preloader (CDC ACM serial) -->
+    <usb-device vendor-id="3725" product-id="8192" />
+    <!-- MTK Preloader (alternative) -->
+    <usb-device vendor-id="3725" product-id="3" />
+    <!-- MTK ADB mode / Fastboot (0x201C) -->
+    <usb-device vendor-id="3725" product-id="8220" />
+    <!-- MTK Fastboot (0x2024) -->
+    <usb-device vendor-id="3725" product-id="8228" />
+    <!-- Generic Fastboot interface (class=255, subclass=66, protocol=3) -->
+    <usb-device class="255" subclass="66" protocol="3" />
+</resources>
